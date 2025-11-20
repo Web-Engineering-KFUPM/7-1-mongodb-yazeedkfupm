@@ -169,22 +169,100 @@
 
 import mongoose from "mongoose";
 
-// establish connection
+
+// ============================================
+// TODO-1: Establish Connection with MongoDB via Mongoose
+// ============================================
+// 1) Replace the placeholder below OR set an environment variable MONGODB_URI
+// Example: mongodb+srv://<username>:<db_password>@cluster0.xxxxx.mongodb.net/test
+// 2) Then run: node server.js
 
 
-// define schema
+const MONGODB_URI = "mongodb+srv://cluster0.rtvzhms.mongodb.net/";
 
 
-// create document
+async function connectDB() {
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log("✅ Connected to MongoDB");
+  } catch (err) {
+    console.error("❌ Connection failed:", err.message);
+  }
+}
 
 
-// read document
+// ============================================
+// TODO-2: Define the schema of the DB
+// ============================================
+const studentSchema = new mongoose.Schema({
+name: { type: String, required: true },
+age: { type: Number, required: true },
+major: { type: String, required: true },
+});
 
 
-// update document
+const Student = mongoose.model("Student", studentSchema);
 
 
-// delete document
+// ============================================
+// TODO-3: Create Documents
+// ============================================
+async function createStudents() {
+await Student.insertMany([
+{ name: "Ali", age: 21, major: "CS" },
+{ name: "Sara", age: 23, major: "SE" },
+]);
+console.log("✅ Inserted Ali & Sara");
+}
+
+
+// ============================================
+// TODO-4: Read Documents
+// ============================================
+async function readStudents() {
+const all = await Student.find();
+console.log("📄 All students:", all);
+}
+
+
+// Filtered read example (age > 21)
+async function readFiltered() {
+const filtered = await Student.find({ age: { $gt: 21 } });
+console.log("📄 Filtered (age > 21):", filtered);
+}
+
+
+// ============================================
+// TODO-5: Update Document (set Ali's age to 22)
+// ============================================
+async function updateStudent() {
+const res = await Student.updateOne({ name: "Ali" }, { $set: { age: 22 } });
+console.log("🔧 Updated Ali:", res.modifiedCount, "document(s)");
+}
+
+
+// ============================================
+// TODO-6: Delete Document (delete Sara)
+// ============================================
+async function deleteStudent() {
+const res = await Student.deleteOne({ name: "Sara" });
+console.log("🗑️ Deleted Sara:", res.deletedCount, "document(s)");
+}
+
+
+// ============================================
+// Runner: Uncomment the steps you want to test
+(async () => {
+  await connectDB();
+
+  await createStudents();
+  await readStudents();
+  await updateStudent();
+  await deleteStudent();
+  await readStudents();
+
+  mongoose.disconnect();
+})();
 
 
 
